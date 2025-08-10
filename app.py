@@ -243,9 +243,21 @@ def verify_admin_login(username, password):
 # ---------- DISPLAY CATALOG ----------
 def display_catalog(df):
     sold_stamp_url = st.secrets["github"].get("sold_stamp_url", None)
+
+    # CSS for responsive card layout
+    st.markdown("""
+        <style>
+        @media (max-width: 768px) {
+            .stHorizontalBlock {
+                flex-direction: column !important;
+                align-items: center;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     for _, row in df.iterrows():
         sold = row["sold"]
-        opacity = 0.3 if sold else 1.0
 
         col1, col2 = st.columns([1, 2])
         with col1:
@@ -255,8 +267,12 @@ def display_catalog(df):
             overlay_html = ""
             if sold and sold_stamp_url:
                 overlay_html = f"""
-                <div style="position:absolute; top:10px; left:10px; z-index:3;">
-                  <img src="{html.escape(sold_stamp_url)}" style="width:120px; height:auto; opacity:0.9;" />
+                <div style="position:absolute; 
+                            top:50%; 
+                            left:50%; 
+                            transform: translate(-50%, -50%);
+                            z-index:3;">
+                  <img src="{html.escape(sold_stamp_url)}" style="width:60%; height:auto; opacity:0.9;" />
                 </div>
                 """
             st.markdown(
@@ -268,6 +284,7 @@ def display_catalog(df):
                 """,
                 unsafe_allow_html=True
             )
+
         with col2:
             st.markdown(f"**Name:** {row['name']}")
             st.markdown(f"**Price:** ₹{row['price']}")
